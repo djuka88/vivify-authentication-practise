@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rule;
+use Webpatser\Countries\Countries;
+
+use Illuminate\Support\Facades\LOG;
+use Illuminate\Support\Facades\DB;
 
 class RegisteredUserController extends Controller
 {
@@ -20,7 +25,13 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
-        return view('auth.register');
+
+        $countryModel = new Countries();
+        $countries = $countryModel->getListForSelect();
+
+        return view('auth.register',[
+            'countries'=>$countries
+        ]);
     }
 
     /**
@@ -33,16 +44,32 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
+
+        // need to adapt country code to be string of exactly 3 characters
+        // because on client side is integer so if code is 8 need to be "008"
+
+        $code=$request->country;
+
+        if(strlen($code)==1) $code="00".$code;
+        elseif(strlen($code)==2) $code="0".$code;
+
+        // updating request parameter
+        $request->merge([
+            'country' => $code,
+        ]);
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'country' => ['required', 'string', 'max:3','min:3',Rule::exists('countries','country_code')],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'country' => $request->country,
         ]);
 
         event(new Registered($user));

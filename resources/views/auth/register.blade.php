@@ -11,7 +11,6 @@
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
-
             <!-- Name -->
             <div>
                 <x-label for="name" :value="__('Name')" />
@@ -43,6 +42,19 @@
                 <x-input id="password_confirmation" class="block mt-1 w-full"
                                 type="password"
                                 name="password_confirmation" required />
+            </div>
+
+            <!-- Countries -->
+            <div class="mt-4">
+                <x-label for="countries" :value="__('Countries')" />
+
+
+                <select id="countries" name="country" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    <option value="">-Select One-</option>
+                    @foreach($countries as $key=>$country)
+                        <option value={{ $key }}>{{ $country }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="flex items-center justify-end mt-4">
