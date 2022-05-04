@@ -22,16 +22,6 @@ class DataController extends Controller
         return response()->json(compact('data'),200);
     }
 
-    public function getToken(){
-        $credentials = request()->only('email', 'password');
-
-        if (! $token = JWTAuth::attempt($credentials)) {
-            return redirect('open');
-        }
-
-        return response()->json(compact('token'));
-    }
-
     public function invalidateToken(){
         auth()->invalidate();
     }

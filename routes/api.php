@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\PostController;
+
 
 
 /*
@@ -31,10 +33,20 @@ Route::group([
     Route::post('me', [AuthController::class,'me']);
 });
 
-Route::get('/open',[DataController::class,'open']);
-Route::post('getToken',[DataController::class,'getToken']);
-Route::post('/closed',[DataController::class,'closed'])->middleware('checkjwt');
+Route::get('open',[DataController::class,'open']);
+Route::post('closed',[DataController::class,'closed'])->middleware('checkjwt');
 Route::post('invalidateToken',[DataController::class,'invalidateToken']);
+
+
+// POST Controller testing authorization
+
+Route::middleware('auth')->group(function(){
+    Route::get('posts',[PostController::class,'index']);
+    Route::post('posts',[PostController::class,'store']);
+    Route::post('posts/{post}',[PostController::class,'show']);
+    Route::put('posts/{post}',[PostController::class,'update']);
+    Route::delete('posts/{post}',[PostController::class,'destroy']);
+});
 
 
 

@@ -6,6 +6,10 @@ use Closure;
 use Illuminate\Http\Request;
 use JWTAuth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 
 
 class CheckJwt
@@ -19,22 +23,15 @@ class CheckJwt
      */
     public function handle(Request $request, Closure $next)
     {
+        // check if user is logged in and have JWT token
+
         try {
             $user = JWTAuth::parseToken()->authenticate();
-        } catch (Exception $e) {
-            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
-                return response()->json(['status' => 'Token is Invalid']);
-            }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
-                return response()->json(['status' => 'Token is Expired']);
-            }else{
-                return response()->json(['status' => 'Authorization Token not found']);
-            }
+        } catch (TokenExpiredException $e) {
+            return response()->json(['status' => 'Token is Expired']);
         }
-
-        $credentials = $request->only('email', 'password');
-
-        if (! $token = JWTAuth::attempt($credentials)) {
-            return response()->json(['status' => 'Invalid credentials']);
+        catch(TokenInvalidException $e){
+            return response()->json(['status' => 'Token is Invalid']);
         }
 
         return $next($request);

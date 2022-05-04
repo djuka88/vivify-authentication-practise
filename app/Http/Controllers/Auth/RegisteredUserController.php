@@ -53,7 +53,7 @@ class RegisteredUserController extends Controller
         if(strlen($code)==1) $code="00".$code;
         elseif(strlen($code)==2) $code="0".$code;
 
-        // updating request parameter
+        // updating request parameter, probably not smart approach
         $request->merge([
             'country' => $code,
         ]);
