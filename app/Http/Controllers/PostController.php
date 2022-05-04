@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Validation\ValidationException;
+
+ use App\Exceptions\TestException;
+
 use Response;
 
 class PostController extends Controller
@@ -23,6 +27,11 @@ class PostController extends Controller
         });
 
         $allPosts = request()->user()->posts;
+
+        // if(true){
+        //     throw ValidationException::withMessages(['field_name' => 'This value is incorrect']);
+        // }
+        
 
         return response()->json($allPosts);
     }
@@ -88,5 +97,11 @@ class PostController extends Controller
         $post->delete();
 
         return response()->json(['status'=>'Post successfully deleted']);
+    }
+
+    public function throwerror(){
+
+        throw new TestException("This is sample exception");
+
     }
 }
